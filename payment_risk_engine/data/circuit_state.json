@@ -1,0 +1,40 @@
+{
+  "stripe": {
+    "failureCount": 0,
+    "circuitState": "closed",
+    "lastFailureTime": 1751019159857,
+    "cooldownTime": 30000,
+    "halfOpenTestInProgress": false,
+    "retryCounts": 86,
+    "transitions": [],
+    "paymentHistory": [
+      {
+        "timestamp": 1751022130771,
+        "success": true
+      },
+      {
+        "timestamp": 1751022130781,
+        "success": false
+      },
+      {
+        "timestamp": 1751022131283,
+        "success": true
+      }
+    ]
+  },
+  "paypal": {
+    "failureCount": 0,
+    "circuitState": "closed",
+    "lastFailureTime": 1751018876827,
+    "cooldownTime": 30000,
+    "halfOpenTestInProgress": false,
+    "retryCounts": 51,
+    "transitions": [],
+    "paymentHistory": [
+      {
+        "timestamp": 1751022131284,
+        "success": true
+      }
+    ]
+  }
+}
