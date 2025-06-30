@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+require('dotenv').config();
 const fraudRoutes = require('./routes/fraudRoutes');
 const tenantRoutes = require('./routes/tenantRoutes');
 const circuitRoutes = require('./routes/circuitRoutes');

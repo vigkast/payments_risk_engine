@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const PERSIST_FILE = path.join(__dirname, '../data/circuit_state.json');
+const PERSIST_FILE = path.join(__dirname, process.env.CIRCUIT_STATE_FILE);
 
 // Provider-specific circuit breaker state
 const providers = ['stripe', 'paypal'];
@@ -47,7 +47,7 @@ function initState() {
 loadState();
 initState();
 
-const historyWindowMs = 10 * 60 * 1000; // 10 minutes
+const historyWindowMs = process.env.HISTORY_WINDOW_MS || 10 * 60 * 1000; // 10 minutes
 
 async function flakyProvider(provider) {
   // Simulate different flakiness per provider if desired

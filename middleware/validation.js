@@ -18,9 +18,8 @@ const schemas = {
       'string.ip': 'IP must be a valid IP address',
       'any.required': 'IP is required'
     }),
-    deviceFingerprint: Joi.string().min(1).required().messages({
-      'string.empty': 'Device fingerprint cannot be empty',
-      'any.required': 'Device fingerprint is required'
+    deviceFingerprint: Joi.string().min(1).optional().messages({
+      'string.empty': 'Device fingerprint cannot be empty'
     }),
     email: Joi.string().email().required().messages({
       'string.email': 'Email must be a valid email address',
@@ -36,14 +35,23 @@ const schemas = {
       'string.max': 'Tenant ID must be at most 50 characters',
       'any.required': 'Tenant ID is required'
     }),
-    stripeKey: Joi.string().min(10).required().messages({
-      'string.min': 'Stripe key must be at least 10 characters',
-      'any.required': 'Stripe key is required'
-    }),
+    stripeKey: Joi.string().min(10).when('preferredProcessor', { is: 'stripe', then: Joi.required() }),
+    paypalKey: Joi.string().min(10).when('preferredProcessor', { is: 'paypal', then: Joi.required() }),
     preferredProcessor: Joi.string().valid('stripe', 'paypal').required().messages({
       'any.only': 'Preferred processor must be either "stripe" or "paypal"',
       'any.required': 'Preferred processor is required'
-    })
+    }),
+    email: Joi.string().email().required().messages({
+      'string.email': 'Email must be a valid email address',
+      'any.required': 'Email is required'
+    }),
+    username: Joi.string().required().messages({
+      'string.alphanum': 'Username must contain only alphanumeric characters',
+      'any.required': 'Username is required'
+    }),
+    password: Joi.string().required().messages({
+      'any.required': 'Password is required'
+    }),
   }),
 
   // Tenant payment payload
@@ -79,6 +87,12 @@ const schemas = {
     source: Joi.string().min(1).required().messages({
       'string.empty': 'Payment source cannot be empty',
       'any.required': 'Payment source is required'
+    }),
+    deviceFingerprint: Joi.string().min(1).optional().messages({
+      'string.empty': 'Device fingerprint cannot be empty'
+    }),
+    email: Joi.string().email().optional().messages({
+      'string.email': 'Email must be a valid email address'
     })
   }),
 
@@ -120,6 +134,12 @@ function validate(schemaName) {
     if (schemaName === 'tenantId') {
       req.params = value;
     } else {
+      if(!req.body){
+        return res.status(400).json({
+          error: 'Validation failed',
+          details: 'No body provided'
+        });
+      }
       req.body = value;
     }
 

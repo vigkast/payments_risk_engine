@@ -4,9 +4,9 @@ const deviceHistory = new Map();
 const transactionHistory = [];
 
 // Configuration
-const MAX_IP_ATTEMPTS = 5; // Max attempts from same IP in 24 hours
-const MAX_DEVICE_ATTEMPTS = 3; // Max attempts from same device in 24 hours
-const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+const MAX_IP_ATTEMPTS = process.env.MAX_IP_ATTEMPTS || 5; // Max attempts from same IP in 10 minutes
+const MAX_DEVICE_ATTEMPTS = process.env.MAX_DEVICE_ATTEMPTS || 3; // Max attempts from same device in 10 minutes
+const CACHE_TTL = process.env.CACHE_TTL || 10 * 60 * 1000; // 10 minutes in milliseconds
 
 function isExpired(timestamp) {
   return Date.now() - timestamp > CACHE_TTL;
@@ -105,13 +105,15 @@ function calculateRiskScore(transaction) {
   }
   
   // Check repeat device fingerprint
-  const deviceCheck = checkRepeatDevice(transaction.deviceFingerprint);
-  if (deviceCheck.isExcessive) {
-    score += 0.3;
-    riskFactors.push(`excessive attempts from device (${deviceCheck.count} attempts)`);
-  } else if (deviceCheck.isRepeat) {
-    score += 0.2;
-    riskFactors.push(`repeat device fingerprint (${deviceCheck.count} attempts)`);
+  if (transaction.deviceFingerprint) {
+    const deviceCheck = checkRepeatDevice(transaction.deviceFingerprint);
+    if (deviceCheck.isExcessive) {
+      score += 0.3;
+      riskFactors.push(`excessive attempts from device (${deviceCheck.count} attempts)`);
+    } else if (deviceCheck.isRepeat) {
+      score += 0.2;
+      riskFactors.push(`repeat device fingerprint (${deviceCheck.count} attempts)`);
+    }
   }
   
   // Store transaction history
