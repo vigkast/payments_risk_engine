@@ -6,7 +6,7 @@ const llmService = require('../services/llmService');
 describe('llmService', () => {
   let postStub;
   before(() => {
-    postStub = sinon.stub(axios, 'post').resolves({ data: { generated_text: 'mocked LLM response' } });
+    postStub = sinon.stub(axios, 'post').resolves({data:{choices:[{message:{content: 'mocked LLM response' } }]}});
   });
   after(() => {
     postStub.restore();

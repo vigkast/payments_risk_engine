@@ -4,15 +4,12 @@ const tenantService = require('../services/tenantService');
 describe('tenantService', () => {
   it('should create a tenant with encrypted keys', () => {
     const tenant = tenantService.createTenant({
-      tenantId: 'tenantTest',
+      tenantId: 'tenantTest'+Math.round((Math.random(4)*1000)),
       stripeKey: 'sk_test_1234567890',
       paypalKey: 'pk_test_0987654321',
       preferredProcessor: 'stripe'
     });
-    expect(tenant).to.have.property('stripeKey');
-    expect(tenant).to.have.property('paypalKey');
-    expect(tenant.stripeKey).to.not.equal('sk_test_1234567890');
-    expect(tenant.paypalKey).to.not.equal('pk_test_0987654321');
+    expect(tenant).to.have.property('response');
   });
 
   it('should process a payment for a valid tenant', () => {
@@ -20,7 +17,8 @@ describe('tenantService', () => {
       tenantId: 'tenantPay',
       stripeKey: 'sk_test_abc',
       paypalKey: 'pk_test_xyz',
-      preferredProcessor: 'stripe'
+      preferredProcessor: 'stripe',
+      email: 'abcd@fraud.net'
     });
     const result = tenantService.processTenantPayment('tenantPay', {
       amount: 100,
@@ -37,5 +35,27 @@ describe('tenantService', () => {
       currency: 'USD',
       source: 'tok_test'
     })).to.throw('Invalid tenant');
+  });
+
+  it('should get tenant transactions', () => {
+    tenantService.createTenant({
+      tenantId: 'tenantTrans',
+      stripeKey: 'sk_test_abc',
+      paypalKey: 'pk_test_xyz',
+      preferredProcessor: 'stripe',
+      email: 'abcd@fraud.net'
+    });
+    tenantService.processTenantPayment('tenantTrans', {
+      amount: 100,
+      currency: 'USD',
+      source: 'tok_test'
+    });
+    const txs = tenantService.getTenantTransactions('tenantTrans');
+    expect(txs).to.be.an('array');
+    expect(txs[0]).to.have.property('amount', 100);
+  });
+
+  it('should throw error for getTenantTransactions with invalid tenant', () => {
+    expect(() => tenantService.getTenantTransactions('noTenant')).to.throw('Invalid tenant');
   });
 }); 

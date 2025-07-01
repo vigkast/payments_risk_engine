@@ -30,7 +30,7 @@ async function callLLM(prompt) {
     return cached;
   }
   try {
-    const apiKey = process.env.GROQ_API_KEY;
+    const apiKey = process.env.GROQ_API_KEY || "test";
     const model = process.env.GROQ_MODEL || 'llama3-8b-8192';
     const response = await axios.post(
      process.env.LLM_SERVER_URL,
@@ -48,7 +48,7 @@ async function callLLM(prompt) {
         }
       }
     );
-    const result = response.data.choices[0].message.content;
+    const result = response?.data?.choices?.[0]?.message?.content;
     setCache(cacheKey, result);
     return result;
   } catch (e) {

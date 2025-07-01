@@ -5,11 +5,39 @@
     "lastFailureTime": 1751019159857,
     "cooldownTime": 30000,
     "halfOpenTestInProgress": false,
-    "retryCounts": 86,
+    "retryCounts": 107,
     "transitions": [],
     "paymentHistory": [
       {
-        "timestamp": 1751022130771,
+        "timestamp": 1751367747089,
+        "success": false
+      },
+      {
+        "timestamp": 1751367747605,
+        "success": true
+      },
+      {
+        "timestamp": 1751367747608,
+        "success": true
+      },
+      {
+        "timestamp": 1751367748116,
+        "success": true
+      },
+      {
+        "timestamp": 1751367766341,
+        "success": false
+      },
+      {
+        "timestamp": 1751367766843,
+        "success": true
+      },
+      {
+        "timestamp": 1751367766845,
+        "success": true
+      },
+      {
+        "timestamp": 1751367766858,
         "success": true
       }
     ]
@@ -20,11 +48,19 @@
     "lastFailureTime": 1751018876827,
     "cooldownTime": 30000,
     "halfOpenTestInProgress": false,
-    "retryCounts": 51,
+    "retryCounts": 56,
     "transitions": [],
     "paymentHistory": [
       {
-        "timestamp": 1751022131284,
+        "timestamp": 1751367747609,
+        "success": false
+      },
+      {
+        "timestamp": 1751367748110,
+        "success": true
+      },
+      {
+        "timestamp": 1751367766847,
         "success": true
       }
     ]

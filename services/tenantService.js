@@ -3,7 +3,7 @@ const tenants = {};
 const fraudDetectionService = require('./fraudDetectionService');
 
 // Use ENCRYPTION_KEY from environment, must be 32 bytes
-const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || "QwErTyUiOpAsDfGhJkLzXcVbNm123456";
 if (!ENCRYPTION_KEY || ENCRYPTION_KEY.length !== 32) {
   throw new Error('ENCRYPTION_KEY must be set in .env and be exactly 32 characters long');
 }

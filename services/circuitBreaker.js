@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const PERSIST_FILE = path.join(__dirname, process.env.CIRCUIT_STATE_FILE);
+const PERSIST_FILE = path.join(__dirname, process.env.CIRCUIT_STATE_FILE || "../data/circuit_state.json");
 
 // Provider-specific circuit breaker state
 const providers = ['stripe', 'paypal'];
@@ -73,7 +73,7 @@ function recordTransition(provider, newState) {
   saveState();
 }
 
-exports.handlePayment = async (payment) => {
+async function handlePayment(payment) {
   const provider = payment.provider || 'stripe';
   const s = state[provider];
   const now = Date.now();
@@ -138,9 +138,9 @@ exports.handlePayment = async (payment) => {
   recordPayment(provider, false, 3);
   saveState();
   return { status: 'failed', reason: 'all retries failed', circuit: s.circuitState, provider };
-};
+}
 
-exports.getStatus = () => {
+function getStatus() {
   const result = {};
   providers.forEach(provider => {
     const s = state[provider];
@@ -161,14 +161,14 @@ exports.getStatus = () => {
     };
   });
   return result;
-};
+}
 
-exports.getLLMSummaryPrompt = (provider = 'stripe') => {
-  const status = exports.getStatus()[provider];
+function getLLMSummaryPrompt(provider = 'stripe') {
+  const status = getStatus()[provider];
   return `In the last 10 minutes, ${status.failureRate}% of payment attempts failed for ${provider}. The circuit breaker is currently ${status.circuitState}, blocking new attempts if open.`;
-};
+}
 
-exports.getMetrics = () => {
+function getMetrics() {
   const metrics = {};
   providers.forEach(provider => {
     const s = state[provider];
@@ -181,4 +181,18 @@ exports.getMetrics = () => {
     };
   });
   return metrics;
+}
+
+module.exports = {
+  saveState,
+  initState,
+  handlePayment,
+  getStatus,
+  getLLMSummaryPrompt,
+  getMetrics,
+  // Export internal helpers for testing
+  flakyProvider,
+  recordPayment,
+  recordTransition,
+  loadState
 };

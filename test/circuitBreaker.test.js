@@ -25,4 +25,21 @@ describe('circuitBreaker', () => {
     expect(metrics.stripe).to.have.property('retryCounts');
     expect(metrics.paypal).to.have.property('retryCounts');
   });
+
+  it('should not throw when calling saveState and initState', () => {
+    expect(() => circuitBreaker.saveState()).to.not.throw();
+    expect(() => circuitBreaker.initState()).to.not.throw();
+  });
+
+  it('should record a payment and update retryCounts', () => {
+    const before = circuitBreaker.getStatus().stripe.retryCounts;
+    circuitBreaker.recordPayment('stripe', true, 2);
+    const after = circuitBreaker.getStatus().stripe.retryCounts;
+    expect(after).to.be.at.least(before);
+  });
+
+  it('flakyProvider should return a boolean', async () => {
+    const result = await circuitBreaker.flakyProvider('stripe');
+    expect(result).to.be.a('boolean');
+  });
 }); 
