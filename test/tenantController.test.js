@@ -49,18 +49,20 @@ describe('tenantController', () => {
   });
 
   describe('payForTenant', () => {
-    it('should process payment and return result', () => {
+    it('should process payment and return result', async () => {
       const req = { body: { amount: 1 }, params: { tenantId: 't1' }, ip: '1.2.3.4' };
       const res = mockRes();
-      tenantServiceStub.processTenantPayment.returns({ status: 'success' });
-      tenantController.payForTenant(req, res);
-      expect(res.json.calledWith({ status: 'success' })).to.be.true;
+      await tenantServiceStub.processTenantPayment.returns({ status: 'success' });
+      await tenantController.payForTenant(req, res);
+      expect(res.json.calledOnce).to.be.true;
+      const responseArg = res.json.getCall(0).args[0];
+      expect(responseArg).to.have.property('status', 'success');
     });
-    it('should handle errors', () => {
+    it('should handle errors', async () => {
       const req = { body: {}, params: { tenantId: 't1' }, ip: '1.2.3.4' };
       const res = mockRes();
       tenantServiceStub.processTenantPayment.throws(new Error('fail'));
-      tenantController.payForTenant(req, res);
+      await tenantController.payForTenant(req, res);
       expect(res.status.calledWith(500)).to.be.true;
       expect(res.json.args[0][0]).to.have.property('error');
     });

@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const tenants = {};
 const fraudDetectionService = require('./fraudDetectionService');
+const circuitBreaker = require('./circuitBreaker');
 
 // Use ENCRYPTION_KEY from environment, must be 32 bytes
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || "QwErTyUiOpAsDfGhJkLzXcVbNm123456";
@@ -54,7 +55,7 @@ exports.authenticateTenant = (username, password) => {
   return null;
 };
 
-exports.processTenantPayment = (tenantId, paymentData) => {
+exports.processTenantPayment = async (tenantId, paymentData) => {
   const tenant = tenants[tenantId];
   if (!tenant) throw new Error("Invalid tenant");
 
@@ -63,20 +64,26 @@ exports.processTenantPayment = (tenantId, paymentData) => {
     paymentData.email = tenant.email;
   }
 
+  // Circuit breaker logic
+  const provider = tenant.preferredProcessor;
+  const status = circuitBreaker.getStatus()[provider];
+  if (status.circuitState === 'open') {
+    return { status: 'rejected', reason: 'circuit open', provider, tenantId, ...paymentData, timestamp: new Date().toISOString() };
+  }
+  // Simulate payment using circuit breaker (calls flakyProvider internally)
+  const cbResult = await circuitBreaker.handlePayment({ provider, ...paymentData });
+  if (cbResult.status !== 'success') {
+    const failedResult = { status: 'failed', reason: cbResult.reason || 'payment failed', provider, tenantId, ...paymentData, timestamp: new Date().toISOString() };
+    tenant.transactions.push(failedResult);
+    if (tenant.transactions.length > 1000) {
+      tenant.transactions.shift();
+    }
+    return failedResult;
+  }
+
   // Calculate risk score and factors
   const riskResult = fraudDetectionService.calculateRiskScore(paymentData);
-
-  let processor = tenant.preferredProcessor;
-  let result;
-  if (processor === 'stripe') {
-    const stripeKey = tenant.stripeKey ? decrypt(tenant.stripeKey) : undefined;
-    result = { status: "success", processor: "stripe", tenantId, ...paymentData, ...riskResult, timestamp: new Date().toISOString() };
-  } else if (processor === 'paypal') {
-    const paypalKey = tenant.paypalKey ? decrypt(tenant.paypalKey) : undefined;
-    result = { status: "success", processor: "paypal", tenantId, ...paymentData, ...riskResult, timestamp: new Date().toISOString() };
-  } else {
-    result = { status: "failed", reason: "Unknown processor", tenantId, ...paymentData, ...riskResult, timestamp: new Date().toISOString() };
-  }
+  const result = { status: "success", processor: provider, tenantId, ...paymentData, ...riskResult, timestamp: new Date().toISOString() };
 
   // Log transaction in-memory for this tenant
   tenant.transactions.push(result);
@@ -84,7 +91,6 @@ exports.processTenantPayment = (tenantId, paymentData) => {
   if (tenant.transactions.length > 1000) {
     tenant.transactions.shift();
   }
-
   return result;
 };
 

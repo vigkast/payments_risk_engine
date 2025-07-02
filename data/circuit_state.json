@@ -2,42 +2,126 @@
   "stripe": {
     "failureCount": 0,
     "circuitState": "closed",
-    "lastFailureTime": 1751019159857,
+    "lastFailureTime": 1751437967217,
     "cooldownTime": 30000,
     "halfOpenTestInProgress": false,
-    "retryCounts": 107,
+    "retryCounts": 202,
     "transitions": [],
     "paymentHistory": [
       {
-        "timestamp": 1751367747089,
+        "timestamp": 1751442183868,
         "success": false
       },
       {
-        "timestamp": 1751367747605,
-        "success": true
-      },
-      {
-        "timestamp": 1751367747608,
-        "success": true
-      },
-      {
-        "timestamp": 1751367748116,
-        "success": true
-      },
-      {
-        "timestamp": 1751367766341,
+        "timestamp": 1751442184369,
         "success": false
       },
       {
-        "timestamp": 1751367766843,
+        "timestamp": 1751442185370,
         "success": true
       },
       {
-        "timestamp": 1751367766845,
+        "timestamp": 1751442236456,
         "success": true
       },
       {
-        "timestamp": 1751367766858,
+        "timestamp": 1751442456411,
+        "success": true
+      },
+      {
+        "timestamp": 1751442536629,
+        "success": true
+      },
+      {
+        "timestamp": 1751442556594,
+        "success": true
+      },
+      {
+        "timestamp": 1751442679273,
+        "success": true
+      },
+      {
+        "timestamp": 1751442679279,
+        "success": false
+      },
+      {
+        "timestamp": 1751442679783,
+        "success": false
+      },
+      {
+        "timestamp": 1751442680784,
+        "success": true
+      },
+      {
+        "timestamp": 1751442680789,
+        "success": true
+      },
+      {
+        "timestamp": 1751442681052,
+        "success": true
+      },
+      {
+        "timestamp": 1751442681060,
+        "success": true
+      },
+      {
+        "timestamp": 1751442732641,
+        "success": true
+      },
+      {
+        "timestamp": 1751442732650,
+        "success": true
+      },
+      {
+        "timestamp": 1751442732656,
+        "success": true
+      },
+      {
+        "timestamp": 1751442732986,
+        "success": false
+      },
+      {
+        "timestamp": 1751442733488,
+        "success": true
+      },
+      {
+        "timestamp": 1751442733492,
+        "success": false
+      },
+      {
+        "timestamp": 1751442733993,
+        "success": true
+      },
+      {
+        "timestamp": 1751442768191,
+        "success": false
+      },
+      {
+        "timestamp": 1751442768694,
+        "success": true
+      },
+      {
+        "timestamp": 1751442768697,
+        "success": true
+      },
+      {
+        "timestamp": 1751442768732,
+        "success": true
+      },
+      {
+        "timestamp": 1751442768998,
+        "success": false
+      },
+      {
+        "timestamp": 1751442769499,
+        "success": true
+      },
+      {
+        "timestamp": 1751442769505,
+        "success": false
+      },
+      {
+        "timestamp": 1751442770006,
         "success": true
       }
     ]
@@ -48,19 +132,19 @@
     "lastFailureTime": 1751018876827,
     "cooldownTime": 30000,
     "halfOpenTestInProgress": false,
-    "retryCounts": 56,
+    "retryCounts": 64,
     "transitions": [],
     "paymentHistory": [
       {
-        "timestamp": 1751367747609,
-        "success": false
-      },
-      {
-        "timestamp": 1751367748110,
+        "timestamp": 1751442680785,
         "success": true
       },
       {
-        "timestamp": 1751367766847,
+        "timestamp": 1751442732650,
+        "success": true
+      },
+      {
+        "timestamp": 1751442768698,
         "success": true
       }
     ]

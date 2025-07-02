@@ -3,7 +3,6 @@ const { getStatusSummary, processPayment, getCircuitBreakerSummary, getMetrics }
 const { validate } = require('../middleware/validation');
 
 router.get('/summary', getStatusSummary);
-router.post('/pay', validate('circuitPayment'), processPayment);
 router.get('/llm-summary', getCircuitBreakerSummary);
 router.get('/metrics', getMetrics);
 

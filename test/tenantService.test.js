@@ -12,7 +12,7 @@ describe('tenantService', () => {
     expect(tenant).to.have.property('response');
   });
 
-  it('should process a payment for a valid tenant', () => {
+  it('should process a payment for a valid tenant', async () => {
     tenantService.createTenant({
       tenantId: 'tenantPay',
       stripeKey: 'sk_test_abc',
@@ -20,7 +20,7 @@ describe('tenantService', () => {
       preferredProcessor: 'stripe',
       email: 'abcd@fraud.net'
     });
-    const result = tenantService.processTenantPayment('tenantPay', {
+    const result = await tenantService.processTenantPayment('tenantPay', {
       amount: 100,
       currency: 'USD',
       source: 'tok_test'
@@ -29,15 +29,20 @@ describe('tenantService', () => {
     expect(result).to.have.property('processor', 'stripe');
   });
 
-  it('should throw error for invalid tenant', () => {
-    expect(() => tenantService.processTenantPayment('noTenant', {
-      amount: 10,
-      currency: 'USD',
-      source: 'tok_test'
-    })).to.throw('Invalid tenant');
+  it('should throw error for invalid tenant', async () => {
+    try {
+      await tenantService.processTenantPayment('noTenant', {
+        amount: 10,
+        currency: 'USD',
+        source: 'tok_test'
+      });
+      throw new Error('Did not throw');
+    } catch (err) {
+      expect(err.message).to.equal('Invalid tenant');
+    }
   });
 
-  it('should get tenant transactions', () => {
+  it('should get tenant transactions', async () => {
     tenantService.createTenant({
       tenantId: 'tenantTrans',
       stripeKey: 'sk_test_abc',
@@ -45,7 +50,7 @@ describe('tenantService', () => {
       preferredProcessor: 'stripe',
       email: 'abcd@fraud.net'
     });
-    tenantService.processTenantPayment('tenantTrans', {
+    await tenantService.processTenantPayment('tenantTrans', {
       amount: 100,
       currency: 'USD',
       source: 'tok_test'
@@ -58,4 +63,5 @@ describe('tenantService', () => {
   it('should throw error for getTenantTransactions with invalid tenant', () => {
     expect(() => tenantService.getTenantTransactions('noTenant')).to.throw('Invalid tenant');
   });
+
 }); 

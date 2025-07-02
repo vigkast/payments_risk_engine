@@ -10,11 +10,11 @@ exports.createTenant = (req, res) => {
   }
 };
 
-exports.payForTenant = (req, res) => {
+exports.payForTenant = async (req, res) => {
   try {
     // Add remote address as 'ip' to payment data
     const paymentData = { ...req.body, ip: req.ip || req.connection?.remoteAddress };
-    const result = tenantService.processTenantPayment(req.params.tenantId, paymentData);
+    const result = await tenantService.processTenantPayment(req.params.tenantId, paymentData);
     res.json(result);
   } catch (err) {
     res.status(err.status || 500).json({ error: err.message || 'Internal server error' });
