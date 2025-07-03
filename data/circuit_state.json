@@ -5,55 +5,87 @@
     "lastFailureTime": 1751540066198,
     "cooldownTime": 30000,
     "halfOpenTestInProgress": false,
-    "retryCounts": 284,
+    "retryCounts": 310,
     "transitions": [],
     "paymentHistory": [
       {
-        "timestamp": 1751543463057,
+        "timestamp": 1751545334717,
         "success": true
       },
       {
-        "timestamp": 1751543463064,
+        "timestamp": 1751545334889,
         "success": true
       },
       {
-        "timestamp": 1751543466577,
+        "timestamp": 1751545334897,
+        "success": false
+      },
+      {
+        "timestamp": 1751545335399,
         "success": true
       },
       {
-        "timestamp": 1751543466734,
+        "timestamp": 1751545928961,
+        "success": false
+      },
+      {
+        "timestamp": 1751545929462,
+        "success": false
+      },
+      {
+        "timestamp": 1751545930464,
         "success": true
       },
       {
-        "timestamp": 1751543466743,
+        "timestamp": 1751545930466,
+        "success": false
+      },
+      {
+        "timestamp": 1751545930968,
+        "success": true
+      },
+      {
+        "timestamp": 1751545930981,
+        "success": true
+      },
+      {
+        "timestamp": 1751545931271,
+        "success": true
+      },
+      {
+        "timestamp": 1751545931276,
         "success": true
       }
     ]
   },
   "paypal": {
-    "failureCount": 1,
+    "failureCount": 0,
     "circuitState": "closed",
-    "lastFailureTime": 1751543466571,
+    "lastFailureTime": 1751545334711,
     "cooldownTime": 30000,
     "halfOpenTestInProgress": false,
-    "retryCounts": 84,
+    "retryCounts": 94,
     "transitions": [],
     "paymentHistory": [
       {
-        "timestamp": 1751543463065,
+        "timestamp": 1751545331209,
         "success": false
       },
       {
-        "timestamp": 1751543463567,
+        "timestamp": 1751545331710,
         "success": false
       },
       {
-        "timestamp": 1751543464569,
+        "timestamp": 1751545332711,
         "success": false
       },
       {
-        "timestamp": 1751543466572,
+        "timestamp": 1751545334711,
         "success": false
+      },
+      {
+        "timestamp": 1751545930970,
+        "success": true
       }
     ]
   }
