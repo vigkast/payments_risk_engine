@@ -22,6 +22,36 @@ function getCache(key) {
   return entry.value;
 }
 
+async function callOpenAI(prompt) {
+  // Fallback to OpenAI API
+  try {
+    const apiKey = process.env.OPENAI_API_KEY;
+    const model = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
+    if (!apiKey) throw new Error('OpenAI API key not set');
+    const response = await axios.post(
+      process.env.OPENAI_URL,
+      {
+        model,
+        messages: [
+          { role: 'system', content: 'You are a helpful assistant for payment risk and fraud explanations.' },
+          { role: 'user', content: prompt }
+        ]
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    return response?.data?.choices?.[0]?.message?.content;
+  } catch (e) {
+    const err = new Error('Both primary and OpenAI LLM services failed.');
+    err.status = 503;
+    throw err;
+  }
+}
+
 async function callLLM(prompt) {
   const cacheKey = getCacheKey(prompt);
   console.log(prompt);
@@ -33,7 +63,7 @@ async function callLLM(prompt) {
     const apiKey = process.env.GROQ_API_KEY || "test";
     const model = process.env.GROQ_MODEL || 'llama3-8b-8192';
     const response = await axios.post(
-     process.env.LLM_SERVER_URL,
+     process.env.GROQ_URL,
       {
         model,
         messages: [
@@ -52,16 +82,24 @@ async function callLLM(prompt) {
     setCache(cacheKey, result);
     return result;
   } catch (e) {
-    if (e.response) {
-      const status = e.response.status;
-      const message = e.response.data?.error?.message || e.response.data?.error || e.message;
-      const err = new Error(message);
-      err.status = status;
-      throw err;
-    } else {
-      const err = new Error('LLM service failed or unavailable.');
-      err.status = 503;
-      throw err;
+    // If primary LLM fails, fallback to OpenAI
+    try {
+      const result = await callOpenAI(prompt);
+      setCache(cacheKey, result);
+      return result;
+    } catch (fallbackError) {
+      // Add error handler logic for fallbackError
+      if (fallbackError.response) {
+        const status = fallbackError.response.status;
+        const message = fallbackError.response.data?.error?.message || fallbackError.response.data?.error || fallbackError.message;
+        const err = new Error(message);
+        err.status = status;
+        throw err;
+      } else {
+        const err = new Error('LLM service failed or unavailable.');
+        err.status = 503;
+        throw err;
+      }
     }
   }
 }
