@@ -12,6 +12,11 @@ const providerFlakiness = {
   paypal: Number(process.env.PAYPAL_FLAKINESS) || 0.5  // 50% success by default
 };
 
+// Maximum failures before opening the circuit (configurable)
+const MAX_FAILURE_COUNT = Number(process.env.FAILURE_COUNT) || 3;
+
+const HISTORY_WINDOW_MS = process.env.HISTORY_WINDOW_MS || 10 * 60 * 1000; // 10 minutes
+
 function loadState() {
   try {
     if (fs.existsSync(PERSIST_FILE)) {
@@ -53,7 +58,6 @@ function initState() {
 loadState();
 initState();
 
-const historyWindowMs = process.env.HISTORY_WINDOW_MS || 10 * 60 * 1000; // 10 minutes
 
 async function flakyProvider(provider) {
   // Simulate different flakiness per provider
@@ -65,10 +69,9 @@ function recordPayment(provider, success, retries) {
   const s = state[provider];
   s.paymentHistory.push({ timestamp: Date.now(), success });
   s.retryCounts += retries;
-  // Remove old entries
-  while (s.paymentHistory.length && s.paymentHistory[0].timestamp < Date.now() - historyWindowMs) {
-    s.paymentHistory.shift();
-  }
+  // Remove old entries using filter for efficiency
+  const cutoff = Date.now() - HISTORY_WINDOW_MS;
+  s.paymentHistory = s.paymentHistory.filter(entry => entry.timestamp >= cutoff);
   saveState();
 }
 
@@ -138,7 +141,7 @@ async function handlePayment(payment) {
 
   s.failureCount++;
   s.lastFailureTime = Date.now();
-  if (s.failureCount >= 5) {
+  if (s.failureCount >= MAX_FAILURE_COUNT) {
     s.circuitState = 'open';
     recordTransition(provider, 'open');
   }
@@ -152,7 +155,7 @@ function getStatus() {
   providers.forEach(provider => {
     const s = state[provider];
     const now = Date.now();
-    const recent = s.paymentHistory.filter(e => e.timestamp > now - historyWindowMs);
+    const recent = s.paymentHistory.filter(e => e.timestamp > now - HISTORY_WINDOW_MS);
     const total = recent.length;
     const failures = recent.filter(e => !e.success).length;
     const failureRate = total ? Math.round((failures / total) * 100) : 0;

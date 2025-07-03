@@ -126,7 +126,7 @@ function calculateRiskScore(transaction) {
   
   // Keep only last 1000 transactions
   if (transactionHistory.length > 1000) {
-    transactionHistory.shift();
+    transactionHistory.splice(0, transactionHistory.length - 1000);
   }
   
   return { score, riskFactors };

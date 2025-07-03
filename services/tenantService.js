@@ -46,11 +46,10 @@ exports.createTenant = ({ tenantId, stripeKey, paypalKey, preferredProcessor, em
 
 exports.authenticateTenant = (username, password) => {
   // Find tenant by username and password
-  for (const tenantId in tenants) {
-    const tenant = tenants[tenantId];
-    if (tenant.username === username && tenant.password === password) {
-      return { tenantId, ...tenant };
-    }
+  const found = Object.entries(tenants).find(([tenantId, tenant]) => tenant.username === username && tenant.password === password);
+  if (found) {
+    const [tenantId, tenant] = found;
+    return { tenantId, ...tenant };
   }
   return null;
 };
