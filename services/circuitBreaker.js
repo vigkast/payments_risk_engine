@@ -6,6 +6,12 @@ const PERSIST_FILE = path.join(__dirname, process.env.CIRCUIT_STATE_FILE || "../
 const providers = ['stripe', 'paypal'];
 let state = {};
 
+// Flakiness rates per provider (can be set via env or hardcoded)
+const providerFlakiness = {
+  stripe: Number(process.env.STRIPE_FLAKINESS) || 0.7, // 70% success by default
+  paypal: Number(process.env.PAYPAL_FLAKINESS) || 0.5  // 50% success by default
+};
+
 function loadState() {
   try {
     if (fs.existsSync(PERSIST_FILE)) {
@@ -50,8 +56,9 @@ initState();
 const historyWindowMs = process.env.HISTORY_WINDOW_MS || 10 * 60 * 1000; // 10 minutes
 
 async function flakyProvider(provider) {
-  // Simulate different flakiness per provider if desired
-  return Math.random() < 0.7;
+  // Simulate different flakiness per provider
+  const flakiness = providerFlakiness[provider] !== undefined ? providerFlakiness[provider] : 0.7;
+  return Math.random() < flakiness;
 }
 
 function recordPayment(provider, success, retries) {
